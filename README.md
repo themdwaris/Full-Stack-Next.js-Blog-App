@@ -9,6 +9,7 @@ Blogian is a full-stack blog application built with **Next.js**, **MongoDB**, an
 * ✅ User Authentication using **JWT**
 * ✍️ Full **CRUD operations** for Blogs and Comments
 * 💬 Only **authors** can edit or delete their own comments
+* 👍 Login user can also likes each other comments
 * 🔐 Protected routes and pages for authenticated users
 * 🌓 **Dark and Light Theme Toggle** using Context API and Tailwind
 * 🔍 Blog listing with **sorting, pagination**, and **filtering**
