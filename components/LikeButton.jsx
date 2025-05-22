@@ -2,17 +2,23 @@
 import { useState } from "react";
 import axios from "axios";
 import { BiLike, BiSolidLike } from "react-icons/bi";
+import toast from "react-hot-toast";
+
 
 const LikeButton = ({ commentId, initialLiked, initialCount }) => {
   const [liked, setLiked] = useState(initialLiked);
   const [likeCount, setLikeCount] = useState(initialCount);
 
+
   const handleLikes = async () => {
     try {
-      const res = await axios.post(`/api/comment/like`,{commentId});
+      const res = await axios.post(`/api/comment/like`, { commentId });
       if (res?.data?.success) {
         setLiked(res.data.liked);
         setLikeCount(res.data.likesCount);
+      } else {
+        toast.error("You have to first login");
+        return;
       }
     } catch (error) {
       console.error("Error liking comment", error);

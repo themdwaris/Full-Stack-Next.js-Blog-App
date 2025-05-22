@@ -107,21 +107,6 @@ const BlogDetails = () => {
     }
   };
 
-  const handleLikes = async (commentId) => {
-    try {
-      const res = await axios.post("/api/comment/like", { commentId });
-      if (res?.data?.success) {
-        setLikeCount(res.data.likesCount);
-        setLiked(res.data.liked);
-      } else {
-        toast.error(res?.data?.message);
-      }
-    } catch (error) {
-      toast.error(error?.message || error);
-      console.log("Failed to like::", error);
-    }
-  };
-
   useEffect(() => {
     getCurrentBlog();
     getAllComments();

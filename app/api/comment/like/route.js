@@ -7,7 +7,9 @@ export async function POST(req) {
   await dbConnect();
   try {
     const user = await getUserFromToken(req);
-    if (!user) {
+    console.log("line 10:", user);
+
+    if (!user || !user?._id) {
       return NextResponse.json({
         message: "User not authorized",
         success: false,
@@ -30,14 +32,14 @@ export async function POST(req) {
 
     if (alreadyLiked) {
       //Unlike
-    //   console.log("unlike");
-      
-      comment.likes=comment?.likes?.filter((id) => id?.toString() !== userId);
+      //   console.log("unlike");
+
+      comment.likes = comment?.likes?.filter((id) => id?.toString() !== userId);
     } else {
       comment?.likes?.push(userId);
     }
 
-    await comment.save()
+    await comment.save();
 
     return NextResponse.json({
       likesCount: comment?.likes?.length,
