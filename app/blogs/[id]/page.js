@@ -4,11 +4,13 @@ import { useBlogContext } from "@/context/BlogContext";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FaGithub, FaInstagram, FaLinkedin, FaXTwitter } from "react-icons/fa6";
+
 import { BiSolidTrash } from "react-icons/bi";
 import { TbEdit } from "react-icons/tb";
 import toast from "react-hot-toast";
 import axios from "axios";
 import BlogLoader from "@/components/BlogLoader";
+import LikeButton from "@/components/LikeButton";
 
 const BlogDetails = () => {
   const { blogs, router, user } = useBlogContext();
@@ -17,6 +19,8 @@ const BlogDetails = () => {
   const [comment, setComment] = useState("");
   const [comments, setAllComments] = useState([]);
   const [commentId, setCommentId] = useState("");
+  // const [likeCount, setLikeCount] = useState(0);
+  // const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const getCurrentBlog = () => {
@@ -102,11 +106,26 @@ const BlogDetails = () => {
       console.log("Failed to delete comment::", error);
     }
   };
+
+  const handleLikes = async (commentId) => {
+    try {
+      const res = await axios.post("/api/comment/like", { commentId });
+      if (res?.data?.success) {
+        setLikeCount(res.data.likesCount);
+        setLiked(res.data.liked);
+      } else {
+        toast.error(res?.data?.message);
+      }
+    } catch (error) {
+      toast.error(error?.message || error);
+      console.log("Failed to like::", error);
+    }
+  };
+
   useEffect(() => {
     getCurrentBlog();
     getAllComments();
   }, [blogs, id]);
-  // console.log(comments);
 
   return (
     <div className="w-full min-h-screen">
@@ -238,25 +257,44 @@ const BlogDetails = () => {
                     </span>
                   </div>
                   <p className="pl-10 break-words">{com?.text}</p>
-                  {user?._id === com?.author?._id && (
-                    <div className="flex items-center gap-3 mt-1.5 justify-end">
-                      <span
-                        className="cursor-pointer transition transform active:scale-90"
-                        onClick={() => {
-                          setComment(com?.text);
-                          setCommentId(com?._id);
-                        }}
-                      >
-                        <TbEdit size={25} />
+                  <div className="mt-3 flex items-center justify-between">
+                    {/* <button
+                      className="flex items-center gap-3 cursor-pointer transition transform active:scale-90"
+                      onClick={() => {
+                        handleLikes(com?._id);
+                      }}
+                    >
+                      {liked ? <BiSolidLike size={25} /> : <BiLike size={25} />}
+
+                      <span className="text-base font-semibold">
+                        {likeCount}
                       </span>
-                      <span
-                        className="cursor-pointer transition transform active:scale-90"
-                        onClick={() => deleteComment(com?._id)}
-                      >
-                        <BiSolidTrash size={25} />
-                      </span>
-                    </div>
-                  )}
+                    </button> */}
+                    <LikeButton
+                      commentId={com?._id}
+                      initialCount={com?.likes?.length || 0}
+                      initialLiked={com?.likes?.includes(user?._id)}
+                    />
+                    {user?._id === com?.author?._id && (
+                      <div className="flex items-center gap-3 mt-1.5 justify-end">
+                        <span
+                          className="cursor-pointer transition transform active:scale-90"
+                          onClick={() => {
+                            setComment(com?.text);
+                            setCommentId(com?._id);
+                          }}
+                        >
+                          <TbEdit size={25} />
+                        </span>
+                        <span
+                          className="cursor-pointer transition transform active:scale-90"
+                          onClick={() => deleteComment(com?._id)}
+                        >
+                          <BiSolidTrash size={25} />
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
           </div>
